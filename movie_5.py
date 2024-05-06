@@ -1,6 +1,5 @@
 from tmdbv3api import TMDb, Movie, Discover
 import mysql.connector
-import dbconfig as cfg
 
 # Initialize TMDb
 tmdb = TMDb()
@@ -12,7 +11,12 @@ discover = Discover()
 movie = Movie()
 
 # Setup MySQL database connection
-conn = mysql.connector.connect(cfg.mysql)
+conn = mysql.connector.connect(
+    host="localhost",
+    user="root",
+    password="Infinity1!",
+    database="movies"
+)
 cursor = conn.cursor()
 
 # Create tables if not exist
@@ -22,6 +26,7 @@ CREATE TABLE IF NOT EXISTS movie_details (
     title TEXT, 
     release_date DATE, 
     poster_path TEXT,
+    backdrop_path TEXT,
     rating FLOAT,
     vote_count INT,
     budget INT,
@@ -44,24 +49,25 @@ CREATE TABLE IF NOT EXISTS actors (
 page = 1
 total_pages = None
 
-# Fetch English movies released in 2023
+# Fetch movies released between 2020 and 2024
 while total_pages is None or page <= total_pages:
     movie_results = discover.discover_movies({
         'primary_release_date.gte': '2023-01-01',
         'primary_release_date.lte': '2023-12-31',
-        'original_language' : 'en',
         'page': page
     })
-    total_pages = movie_results.total_pages  # Update total_pages from API response
+    total_pages = movie_results.total_pages
 
     for movie_data in movie_results:
         m = movie.details(movie_data.id)
-        if m and (m.revenue != 0):  # Check if budget or revenue is not 0
+        if m:
+            # Insert movie details into the movie_details table
             cursor.execute('''
-            INSERT IGNORE INTO movie_details (id, title, release_date, poster_path, rating, vote_count, budget, revenue, runtime)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-            ''', (m.id, m.title, m.release_date, m.poster_path, m.vote_average, m.vote_count, m.budget, m.revenue, m.runtime))
+            INSERT IGNORE INTO movie_details (id, title, release_date, poster_path, backdrop_path, rating, vote_count, budget, revenue, runtime)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            ''', (m.id, m.title, m.release_date, m.poster_path, m.backdrop_path, m.vote_average, m.vote_count, m.budget, m.revenue, m.runtime))
             
+            # Fetch lead actors and insert them into the actors table
             cast = movie.credits(m.id)['cast']
             num_lead_actors = 1
             lead_cast = sorted(cast, key=lambda actor: actor['order'])[:num_lead_actors]
@@ -72,7 +78,7 @@ while total_pages is None or page <= total_pages:
                 ''', (m.id, m.title, actor['name']))
 
     conn.commit()
-    page += 1  # Increment to fetch next page
+    page += 1
 
 # Close connection
 conn.close()

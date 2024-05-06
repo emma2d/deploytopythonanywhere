@@ -1,6 +1,5 @@
 from tmdbv3api import TMDb, Movie, Discover
 import mysql.connector
-import dbconfig as cfg
 
 # Initialize TMDb
 tmdb = TMDb()
@@ -12,7 +11,12 @@ discover = Discover()
 movie = Movie()
 
 # Setup MySQL database connection
-conn = mysql.connector.connect(cfg.mysql)
+conn = mysql.connector.connect(
+    host="localhost",
+    user="root",
+    password="Infinity1!",
+    database="movies"
+)
 cursor = conn.cursor()
 
 # Create tables if not exist
@@ -44,19 +48,18 @@ CREATE TABLE IF NOT EXISTS actors (
 page = 1
 total_pages = None
 
-# Fetch English movies released in 2023
+# Fetch movies released between 2020 and 2024
 while total_pages is None or page <= total_pages:
     movie_results = discover.discover_movies({
         'primary_release_date.gte': '2023-01-01',
         'primary_release_date.lte': '2023-12-31',
-        'original_language' : 'en',
         'page': page
     })
     total_pages = movie_results.total_pages  # Update total_pages from API response
 
     for movie_data in movie_results:
         m = movie.details(movie_data.id)
-        if m and (m.revenue != 0):  # Check if budget or revenue is not 0
+        if m and (m.revenue != 0):
             cursor.execute('''
             INSERT IGNORE INTO movie_details (id, title, release_date, poster_path, rating, vote_count, budget, revenue, runtime)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
@@ -73,6 +76,6 @@ while total_pages is None or page <= total_pages:
 
     conn.commit()
     page += 1  # Increment to fetch next page
-
+    
 # Close connection
 conn.close()
