@@ -103,11 +103,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     })
                     .then(actors => {
                         const actorDetails = document.getElementById('actor-details');
-                        actorDetails.innerHTML = '<h3>Lead Actors</h3>';
+                        actorDetails.innerHTML = '<h3>Lead Actor</h3>';
+                        const leadActorNames = new Set();
                         actors.forEach(actor => {
-                            const div = document.createElement('div');
-                            div.innerHTML = `Name: ${actor.lead_name}`;
-                            actorDetails.appendChild(div);
+                            if (!leadActorNames.has(actor.lead_name)) {
+                                leadActorNames.add(actor.lead_name);
+                                const div = document.createElement('div');
+                                div.innerHTML = `Name: ${actor.lead_name}`;
+                                actorDetails.appendChild(div);
+                            }
                         });
                     })
                     .catch(error => {

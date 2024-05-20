@@ -69,6 +69,11 @@ class MovieDAO:
                 SELECT m.title, a.lead_name, m.revenue
                 FROM movie_details m
                 JOIN actors a ON m.id = a.movie_id
+                WHERE a.actor_id = (
+                    SELECT MIN(actor_id)
+                    FROM actors
+                    WHERE movie_id = m.id
+                )
                 ORDER BY m.revenue DESC
                 LIMIT 1
             ''')
