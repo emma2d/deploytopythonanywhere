@@ -54,15 +54,19 @@ This is the final project for the Web Services & Applications module of the High
 - `requests`
 
 ## User Instructions
+To host in pythonanywhere run the following in the pythonanywhere console:
 
-bash
-```
+1. To create virtual environment:
+```bash
 $ python -m venv venv
 ```
-```
+
+2. To activate virtual environment: 
+```bash
 $ source venv/bin/activate
 ```
-```
+3. To install reqired packages:
+```bash
 pip install -r requirements.txt
 ```
 
