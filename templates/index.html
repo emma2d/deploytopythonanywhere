@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Movies</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .title {
+            font-family: Arial, sans-serif;
+            font-size: 36px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #333;
+            letter-spacing: 2px;
+            word-spacing: 4px;
+            text-align: center;
+            background-color: #ddd4f8;
+            border: 2px solid #000;
+            border-radius: 5px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 2.5);
+            padding: 10px;
+            margin: 40px auto;
+            width: 50%;
+        }
+
+        .container {
+            background-color: #c3c3e2;
+            border: 5px solid #7459796b;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .movie-details {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .movie-details .text {
+            flex: 1;
+            justify-content: center;
+        }
+
+        .movie-details .image {
+            flex: 0 0 auto;
+            width: 300px;
+            margin-left: 20px;
+        }
+
+        #movie-list {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
+        #update-movie-button {
+            display: none;
+        }
+
+        #update-movie-section {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .button-center {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .analytics-section {
+            margin-top: 40px;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        #revenue-budget-chart {
+            width: 100%;
+            height: 400px;
+            border: 1px solid black;
+        }
+
+        .actors-section {
+            margin-top: 20px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">Movies Summer 2023</h1>
+        
+        <!-- Display movies -->
+        <div class="mb-3 text-center">
+            <button id="view-movies" class="btn btn-outline-primary">View All Movies</button>
+            <button id="hide-movies" class="btn btn-secondary" style="display: none;">Hide Movies</button>
+        </div>
+        <div id="movie-list" style="display: none;"></div>
+
+        <!-- View Single Movie Form -->
+        <div class="mt-3 single-movie-section">
+            <h2>View Movie Details By ID</h2>
+            <form id="view-single-movie-form" class="mb-3">
+                <div class="input-group mb-3">
+                    <input type="number" name="id" class="form-control" placeholder="Enter Movie ID" required>
+                    <button class="btn btn-secondary" type="submit">View Details</button>
+                </div>
+            </form>
+            <div id="single-movie-details"></div>
+            <div id="actor-details"></div>
+            <div class="button-center">
+                <button id="update-movie-button" class="btn btn-primary mt-3">Update Movie</button>
+            </div>
+        </div>
+
+        <!-- Update movie form, initially hidden -->
+        <div id="update-movie-section">
+            <h2>Update Selected Movie</h2>
+            <form id="update-movie-form" class="mb-3">
+                <div class="row">
+                    <div class="col-md-6">
+                        <input type="text" class="form-control mb-2" name="title" placeholder="Title" required>
+                        <input type="date" class="form-control mb-2" name="release_date" placeholder="Release Date" required>
+                        <input type="text" class="form-control mb-2" name="poster_path" placeholder="Poster Path">
+                    </div>
+                    <div class="col-md-6">
+                        <input type="number" class="form-control mb-2" step="0.01" name="rating" placeholder="Rating" required>
+                        <input type="number" class="form-control mb-2" name="vote_count" placeholder="Vote Count" required>
+                        <input type="number" class="form-control mb-2" name="budget" placeholder="Budget" required>
+                        <input type="number" class="form-control mb-2" name="revenue" placeholder="Revenue" required>
+                        <input type="number" class="form-control mb-2" name="runtime" placeholder="Runtime (minutes)" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit Update</button>
+                    <button type="button" class="btn btn-secondary ml-2" id="clear-update-form">Clear</button>
+                </div>
+            </form>
+        </div>
+        <hr>
+        <!-- Add movie form -->
+        <div class="container mb-3 text-center">
+            <h2>Add New Movie</h2>
+            <form id="add-movie-form" class="mb-3">
+                <div class="row">
+                    <div class="col-md-6">
+                        <input type="number" class="form-control mb-2" name="id" placeholder="Movie ID" required>
+                        <input type="text" class="form-control mb-2" name="title" placeholder="Title" required>
+                        <input type="date" class="form-control mb-2" name="release_date" placeholder="Release Date" required>
+                        <input type="text" class="form-control mb-2" name="poster_path" placeholder="Poster Path">
+                    </div>
+                    <div class="col-md-6">
+                        <input type="number" class="form-control mb-2" step="0.01" name="rating" placeholder="Rating" required>
+                        <input type="number" class="form-control mb-2" name="vote_count" placeholder="Vote Count" required>
+                        <input type="number" class="form-control mb-2" name="budget" placeholder="Budget" required>
+                        <input type="number" class="form-control mb-2" name="revenue" placeholder="Revenue" required>
+                        <input type="number" class="form-control mb-2" name="runtime" placeholder="Runtime (minutes)" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-outline-primary">Add Movie</button>
+                <button type="button" class="btn btn-outline-secondary ml-2" id="clear-add-form">Clear</button>
+            </form>
+        </div>
+        
+        <!-- Delete movie form -->
+        <div class="container mb-3 text-center">
+            <h2>Delete Movie</h2>
+            <form id="delete-movie-form" class="mb-3">
+                <div class="row justify-content-center">
+                    <div class="col-md-5">
+                        <input type="number" class="form-control mb-2" name="id" placeholder="Movie ID" required>
+                    </div>
+                    <div class="col-md-6">
+                        <button type="submit" class="btn btn-danger">Delete Movie</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Analytics Section -->
+        <div class="container mb-3 text-center analytics-section">
+            <h2 class="text-center">Revenue vs Budget Analysis</h2>
+            <div id="revenue-budget-chart-container">
+                <canvas id="revenue-budget-chart" style="width: 100%; height: 500px;"></canvas>
+            </div>
+        </div>
+
+        <!-- Highest Grossing Movie Section -->
+        <div class="container mb-3 text-center">
+            <button id="highest-grossing-movie" class="btn btn-outline-success">Highest Grossing Movie</button>
+            <div id="highest-grossing-movie-details" class="mt-3"></div>
+        </div>
+
+        <h6>Created by Emma Dunleavy, Web Services and Applications Module, H. Dip Data Analytics 23/24, ATU.</h6>
+
+        <!-- Bootstrap Bundle with Popper -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Chart.js -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <!-- Your script -->
+        <script src="/static/app.js"></script>
+    </div>
+</body>
+</html>
