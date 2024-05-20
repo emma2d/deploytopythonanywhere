@@ -12,6 +12,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const revenueBudgetChartElement = document.getElementById('revenue-budget-chart').getContext('2d');
     const highestGrossingMovieButton = document.getElementById('highest-grossing-movie');
     const highestGrossingMovieDetails = document.getElementById('highest-grossing-movie-details');
+    const viewMovieAnalyticsButton = document.getElementById('view-movie-analytics');
+    const analyticsSection = document.querySelector('.analytics-section');
     let revenueBudgetChart;
 
     let chartInitialized = false;
@@ -35,11 +37,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 hideMoviesButton.style.display = 'inline'; // Show the Hide Movies button
 
                 // Update the analytics chart
-                if (data.length > 0 && !chartInitialized) {
+                if (data.length > 0) {
                     setTimeout(() => {
                         if (revenueBudgetChartElement.canvas) { // Ensure the canvas context is available
                             updateAnalyticsChart(data);
-                            chartInitialized = true; // Mark chart as initialized
                         } else {
                             console.error('Canvas context is not available.');
                         }
@@ -60,11 +61,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 return response.json();
             })
             .then(movie => {
+                const releaseDate = new Date(movie.release_date).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                });
+
                 singleMovieDetails.innerHTML = `
                     <div class="movie-details">
                         <div class="text">
                             <h2>${movie.title}</h2>
-                            <p>Release Date: ${movie.release_date}</p>
+                            <p>Release Date: ${releaseDate}</p>
                             <p>Rating: ${movie.rating}</p>
                             <p>Votes: ${movie.vote_count}</p>
                             <p>Budget: ${movie.budget}</p>
@@ -80,7 +87,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 // Prepopulate the update movie form with the fetched movie details
                 updateMovieForm.elements['title'].value = movie.title;
-                updateMovieForm.elements['release_date'].value = movie.release_date;
+                updateMovieForm.elements['release_date'].value = movie.release_date.split('T')[0];
                 updateMovieForm.elements['poster_path'].value = movie.poster_path;
                 updateMovieForm.elements['rating'].value = movie.rating;
                 updateMovieForm.elements['vote_count'].value = movie.vote_count;
@@ -250,9 +257,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     });
 
-    // Initial fetch to populate the analytics chart
-    fetchMovies();
-
     // Attach event listeners
     document.getElementById('view-movies').addEventListener('click', fetchMovies);
     hideMoviesButton.addEventListener('click', hideMovies);
@@ -271,4 +275,10 @@ document.addEventListener('DOMContentLoaded', function() {
         resetToHomeScreen();
     });
     clearAddFormButton.addEventListener('click', () => clearForm(addMovieForm));
+
+    // View Movie Analytics button event listener
+    viewMovieAnalyticsButton.addEventListener('click', () => {
+        analyticsSection.style.display = 'block'; // Show the analytics section
+        fetchMovies(); // Fetch movies and update the chart
+    });
 });

@@ -4,7 +4,7 @@ import dbconfig as cfg
 import requests
 import os
 import threading
-import time
+
 
 # Initialize TMDb
 tmdb = TMDb()
@@ -23,7 +23,7 @@ def main():
     conn = None
     cursor = None
     try:
-        conn = mysql.connector.connect(**cfg.mysql)
+        conn = mysql.connector.connect(**cfg.db_config)
         cursor = conn.cursor()
         print("Connected successfully to the database.")
 

@@ -53,6 +53,18 @@ This is the final project for the Web Services & Applications module of the High
 - `mysql-connector-python`
 - `requests`
 
+## User Instructions
+
+bash
+```
+$ python -m venv venv
+```
+```
+$ source venv/bin/activate
+```
+```
+pip install -r requirements.txt
+```
 
 *** 
 
